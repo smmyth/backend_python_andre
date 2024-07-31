@@ -1,0 +1,188 @@
+# Lista para armazenar organizações
+organizacoes = []
+
+# Lista para armazenar projetos
+projetos = []
+
+# Função para criar uma nova organização
+def criar_organizacao(nome, area_atuacao, descricao):
+    # Verifica se a organização já existe
+    if any(org['nome'] == nome for org in organizacoes):
+        print(f"Organização '{nome}' já existe.")
+        return
+    # Cria um dicionário para a organização e adiciona à lista
+    organizacao = {'nome': nome, 'area_atuacao': area_atuacao, 'descricao': descricao}
+    organizacoes.append(organizacao)
+    print(f"Organização '{nome}' criada com sucesso.")
+
+# Função para ler todas as organizações
+def ler_organizacoes():
+    return organizacoes
+
+# Função para atualizar uma organização existente
+def atualizar_organizacao(nome_antigo, novo_nome, nova_area_atuacao, nova_descricao):
+    for organizacao in organizacoes:
+        if organizacao['nome'] == nome_antigo:
+            # Atualiza os detalhes da organização
+            organizacao['nome'] = novo_nome
+            organizacao['area_atuacao'] = nova_area_atuacao
+            organizacao['descricao'] = nova_descricao
+            print(f"Organização '{nome_antigo}' atualizada para '{novo_nome}'.")
+            return
+    print(f"Organização '{nome_antigo}' não encontrada.")
+
+# Função para excluir uma organização
+def excluir_organizacao(nome):
+    global organizacoes
+    # Filtra a lista de organizações para remover a especificada
+    organizacoes = [org for org in organizacoes if org['nome'] != nome]
+    print(f"Organização '{nome}' excluída.")
+
+# Função para criar um novo projeto
+def criar_projeto(nome_projeto, nome_organizacao, nome_comunidade, descricao):
+    # Verifica se o projeto já existe
+    if any(proj['nome_projeto'] == nome_projeto for proj in projetos):
+        print(f"Projeto '{nome_projeto}' já existe.")
+        return
+    # Verifica se a organização especificada existe
+    if not any(org['nome'] == nome_organizacao for org in organizacoes):
+        print(f"Organização '{nome_organizacao}' não existe. Crie a organização primeiro.")
+        return
+    # Cria um dicionário para o projeto e adiciona à lista
+    projeto = {'nome_projeto': nome_projeto, 'nome_organizacao': nome_organizacao, 'nome_comunidade': nome_comunidade, 'descricao': descricao}
+    projetos.append(projeto)
+    print(f"Projeto '{nome_projeto}' criado com sucesso.")
+
+# Função para ler todos os projetos
+def ler_projetos():
+    return projetos
+
+# Função para atualizar um projeto existente
+def atualizar_projeto(nome_projeto_antigo, novo_nome_projeto, nova_organizacao, nova_comunidade, nova_descricao):
+    for projeto in projetos:
+        if projeto['nome_projeto'] == nome_projeto_antigo:
+            # Atualiza os detalhes do projeto
+            projeto['nome_projeto'] = novo_nome_projeto
+            projeto['nome_organizacao'] = nova_organizacao
+            projeto['nome_comunidade'] = nova_comunidade
+            projeto['descricao'] = nova_descricao
+            print(f"Projeto '{nome_projeto_antigo}' atualizado para '{novo_nome_projeto}'.")
+            return
+    print(f"Projeto '{nome_projeto_antigo}' não encontrado.")
+
+# Função para excluir um projeto
+def excluir_projeto(nome_projeto):
+    global projetos
+    # Filtra a lista de projetos para remover o especificado
+    projetos = [proj for proj in projetos if proj['nome_projeto'] != nome_projeto]
+    print(f"Projeto '{nome_projeto}' excluído.")
+
+# Função para listar organizações e seus projetos vinculados
+def listar_organizacoes_com_projetos():
+    if not organizacoes or not projetos:
+        print("Não há organizações ou projetos cadastrados. Crie uma organização e um projeto primeiro.")
+        return
+    for organizacao in organizacoes:
+        print(f"Organização: {organizacao['nome']}, Área de Atuação: {organizacao['area_atuacao']}, Descrição: {organizacao['descricao']}")
+        org_projetos = [proj for proj in projetos if proj['nome_organizacao'] == organizacao['nome']]
+        if org_projetos:
+            for proj in org_projetos:
+                print(f"  - Projeto: {proj['nome_projeto']}, Comunidade: {proj['nome_comunidade']}, Descrição: {proj['descricao']}")
+        else:
+            print("  - Nenhum projeto vinculado")
+
+# Função para listar projetos e suas organizações vinculadas
+def listar_projetos_com_organizacoes():
+    if not projetos or not organizacoes:
+        print("Não há projetos ou organizações cadastrados. Crie um projeto e uma organização primeiro.")
+        return
+    for projeto in projetos:
+        print(f"Projeto: {projeto['nome_projeto']}, Comunidade: {projeto['nome_comunidade']}, Descrição: {projeto['descricao']}")
+        org = next((org for org in organizacoes if org['nome'] == projeto['nome_organizacao']), None)
+        if org:
+            print(f"  - Organização: {org['nome']}, Área de Atuação: {org['area_atuacao']}, Descrição: {org['descricao']}")
+        else:
+            print("  - Nenhuma organização vinculada")
+
+# Função para exibir o menu e processar a escolha do usuário
+def menu():
+    while True:
+        print("\nMenu:")
+        print("1. Criar Organização")
+        print("2. Atualizar Organização")
+        print("3. Excluir Organização")
+        print("4. Listar Organizações")
+        print("5. Criar Projeto")
+        print("6. Atualizar Projeto")
+        print("7. Excluir Projeto")
+        print("8. Listar Projetos")
+        print("9. Listar Organizações com seus Projetos")
+        print("10. Listar Projetos com suas Organizações")
+        print("11. Sair")
+
+        escolha = input("Escolha uma opção: ")
+
+        if escolha == '1':
+            nome = input("Nome da organização: ")
+            area_atuacao = input("Área de atuação: ")
+            descricao = input("Descrição: ")
+            criar_organizacao(nome, area_atuacao, descricao)
+
+        elif escolha == '2':
+            nome_antigo = input("Nome atual da organização: ")
+            novo_nome = input("Novo nome da organização: ")
+            nova_area_atuacao = input("Nova área de atuação: ")
+            nova_descricao = input("Nova descrição: ")
+            atualizar_organizacao(nome_antigo, novo_nome, nova_area_atuacao, nova_descricao)
+
+        elif escolha == '3':
+            nome = input("Nome da organização a excluir: ")
+            excluir_organizacao(nome)
+
+        elif escolha == '4':
+            orgs = ler_organizacoes()
+            for org in orgs:
+                print(f"Nome: {org['nome']}, Área de Atuação: {org['area_atuacao']}, Descrição: {org['descricao']}")
+
+        elif escolha == '5':
+            if not organizacoes:
+                print("Não há organizações cadastradas. Crie uma organização primeiro.")
+            else:
+                nome_projeto = input("Nome do projeto: ")
+                nome_organizacao = input("Nome da organização: ")
+                nome_comunidade = input("Nome da comunidade: ")
+                descricao = input("Descrição: ")
+                criar_projeto(nome_projeto, nome_organizacao, nome_comunidade, descricao)
+
+        elif escolha == '6':
+            nome_projeto_antigo = input("Nome atual do projeto: ")
+            novo_nome_projeto = input("Novo nome do projeto: ")
+            nova_organizacao = input("Nova organização: ")
+            nova_comunidade = input("Nova comunidade: ")
+            nova_descricao = input("Nova descrição: ")
+            atualizar_projeto(nome_projeto_antigo, novo_nome_projeto, nova_organizacao, nova_comunidade, nova_descricao)
+
+        elif escolha == '7':
+            nome_projeto = input("Nome do projeto a excluir: ")
+            excluir_projeto(nome_projeto)
+
+        elif escolha == '8':
+            projs = ler_projetos()
+            for proj in projs:
+                print(f"Projeto: {proj['nome_projeto']}, Organização: {proj['nome_organizacao']}, Comunidade: {proj['nome_comunidade']}, Descrição: {proj['descricao']}")
+
+        elif escolha == '9':
+            listar_organizacoes_com_projetos()
+
+        elif escolha == '10':
+            listar_projetos_com_organizacoes()
+
+        elif escolha == '11':
+            print("Saindo do programa.")
+            break
+
+        else:
+            print("Opção inválida. Tente novamente.")
+
+if __name__ == "__main__":
+    menu()
