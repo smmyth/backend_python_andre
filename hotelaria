@@ -1,0 +1,347 @@
+# Integrantes: Thaiana, Smmyth, Luiz Primo, Luiz Henrique
+
+from datetime import datetime  # Importa a classe datetime para manipulação de datas
+
+class Quarto:
+    def __init__(self, numero, tipo, tarifa_diaria):
+        # Inicializa a classe Quarto com os atributos número, tipo e tarifa diária
+        self.numero = numero
+        self.tipo = tipo
+        self.tarifa_diaria = tarifa_diaria
+
+    def __str__(self):
+        # Retorna uma string representando o objeto Quarto, incluindo o número, tipo e tarifa diária formatada com duas casas decimais
+        return f"Quarto {self.numero} - Tipo: {self.tipo}, Tarifa Diária: R${self.tarifa_diaria:.2f}"
+
+class Hospede:
+    def __init__(self, nome, endereco, telefone):
+        # Inicializa a classe Hospede com os atributos nome, endereço e telefone
+        self.nome = nome
+        self.endereco = endereco
+        self.telefone = telefone
+
+    def __str__(self):
+        # Retorna uma string representando o objeto Hospede, incluindo o nome, endereço e telefone
+        return f"Hóspede {self.nome}, Endereço: {self.endereco}, Telefone: {self.telefone}"
+
+class Reserva:
+    def __init__(self, data_inicio, data_fim, quarto, hospede):
+        # Converte as datas de início e fim de string para objetos datetime e inicializa os atributos quarto e hospede
+        self.data_inicio = datetime.strptime(data_inicio, "%d-%m-%Y")
+        self.data_fim = datetime.strptime(data_fim, "%d-%m-%Y")
+        self.quarto = quarto
+        self.hospede = hospede
+
+    def __str__(self):
+        # Retorna uma string representando o objeto Reserva, incluindo as datas de início e fim formatadas e os detalhes do quarto e hóspede
+        return (f"Reserva para {self.hospede.nome} no Quarto {self.quarto.numero} de "
+                f"{self.data_inicio.strftime('%d-%m-%Y')} a {self.data_fim.strftime('%d-%m-%Y')}")
+
+class GerenciadorHotel:
+    def __init__(self):
+        # Inicializa as coleções de quartos, hóspedes e reservas como um dicionário vazio e uma lista vazia, respectivamente
+        self.quartos = {}
+        self.hospedes = {}
+        self.reservas = []
+
+    def criar_quarto(self, numero, tipo, tarifa_diaria):
+        # Cria um novo objeto Quarto e o adiciona ao dicionário de quartos
+        self.quartos[numero] = Quarto(numero, tipo, tarifa_diaria)
+
+    def ler_quarto(self, numero):
+        # Retorna o objeto Quarto correspondente ao número fornecido
+        return self.quartos.get(numero)
+
+    def atualizar_quarto(self, numero, tipo=None, tarifa_diaria=None):
+        # Atualiza os atributos de um quarto existente se os novos valores forem fornecidos
+        quarto = self.quartos.get(numero)
+        if quarto:
+            if tipo is not None:
+                quarto.tipo = tipo
+            if tarifa_diaria is not None:
+                quarto.tarifa_diaria = tarifa_diaria
+
+    def deletar_quarto(self, numero):
+        # Remove um quarto do dicionário de quartos pelo número
+        if numero in self.quartos:
+            del self.quartos[numero]
+
+    def listar_quartos(self):
+        # Lista todos os quartos cadastrados, ou informa que nenhum quarto está cadastrado
+        if self.quartos:
+            for quarto in self.quartos.values():
+                print(quarto)
+        else:
+            print("Nenhum quarto cadastrado.")
+
+    def criar_hospede(self, nome, endereco, telefone):
+        # Cria um novo objeto Hospede e o adiciona ao dicionário de hóspedes
+        self.hospedes[nome] = Hospede(nome, endereco, telefone)
+
+    def ler_hospede(self, nome):
+        # Retorna o objeto Hospede correspondente ao nome fornecido
+        return self.hospedes.get(nome)
+
+    def atualizar_hospede(self, nome, endereco=None, telefone=None):
+        # Atualiza os atributos de um hóspede existente se os novos valores forem fornecidos
+        hospede = self.hospedes.get(nome)
+        if hospede:
+            if endereco is not None:
+                hospede.endereco = endereco
+            if telefone is not None:
+                hospede.telefone = telefone
+
+    def deletar_hospede(self, nome):
+        # Remove um hóspede do dicionário de hóspedes pelo nome
+        if nome in self.hospedes:
+            del self.hospedes[nome]
+
+    def listar_hospedes(self):
+        # Lista todos os hóspedes cadastrados, ou informa que nenhum hóspede está cadastrado
+        if self.hospedes:
+            for hospede in self.hospedes.values():
+                print(hospede)
+        else:
+            print("Nenhum hóspede cadastrado.")
+
+    def criar_reserva(self, data_inicio, data_fim, numero_quarto, nome_hospede):
+        # Cria um novo objeto Reserva e o adiciona à lista de reservas se o quarto e o hóspede existirem
+        quarto = self.quartos.get(numero_quarto)
+        hospede = self.hospedes.get(nome_hospede)
+        if quarto and hospede:
+            reserva = Reserva(data_inicio, data_fim, quarto, hospede)
+            self.reservas.append(reserva)
+            return reserva
+        return None
+
+    def ler_reserva(self, numero_quarto, nome_hospede):
+        # Retorna a reserva correspondente ao número do quarto e nome do hóspede fornecidos
+        for reserva in self.reservas:
+            if reserva.quarto.numero == numero_quarto and reserva.hospede.nome == nome_hospede:
+                return reserva
+        return None
+
+    def atualizar_reserva(self, numero_quarto, nome_hospede, data_inicio=None, data_fim=None):
+        # Atualiza as datas de uma reserva existente se os novos valores forem fornecidos
+        reserva = self.ler_reserva(numero_quarto, nome_hospede)
+        if reserva:
+            if data_inicio is not None:
+                reserva.data_inicio = datetime.strptime(data_inicio, "%d-%m-%Y")
+            if data_fim is not None:
+                reserva.data_fim = datetime.strptime(data_fim, "%d-%m-%Y")
+
+    def deletar_reserva(self, numero_quarto, nome_hospede):
+        # Remove uma reserva da lista de reservas pelo número do quarto e nome do hóspede
+        reserva = self.ler_reserva(numero_quarto, nome_hospede)
+        if reserva:
+            self.reservas.remove(reserva)
+
+    def listar_reservas(self):
+        # Lista todas as reservas cadastradas, ou informa que nenhuma reserva está cadastrada
+        if self.reservas:
+            for reserva in self.reservas:
+                print(reserva)
+        else:
+            print("Nenhuma reserva cadastrada.")
+
+def menu():
+    # Função principal que implementa um menu de gerenciamento de hotel
+    gerenciador = GerenciadorHotel()
+
+    # Criação de alguns quartos fictícios para teste
+    gerenciador.criar_quarto(101, "Solteiro", 149.99)
+    gerenciador.criar_quarto(102, "Duplo", 249.99)
+    gerenciador.criar_quarto(103, "Suite", 499.99)
+    gerenciador.criar_quarto(104, "Presidencial", 1199.99)
+
+    # Criação de alguns hóspedes fictícios para teste
+    gerenciador.criar_hospede("João Silva", "Rua da Palma, 123", "81988445544")
+    gerenciador.criar_hospede("Maria Oliveira", "Av. Conde da Boa Vista, 123", "1122234455")
+    gerenciador.criar_hospede("Carlos Souza", "Av. Caxangá, 123", "2153555454")
+
+    # Criação de algumas reservas fictícias para teste
+    gerenciador.criar_reserva("01-09-2024", "05-09-2024", 101, "João Silva")
+    gerenciador.criar_reserva("02-09-2024", "06-09-2024", 102, "Maria Oliveira")
+    gerenciador.criar_reserva("03-09-2024", "07-09-2024", 103, "Carlos Souza")
+
+    # Laço principal que exibe o menu e processa as opções do usuário
+    while True:
+        print("\nMenu Principal:")
+        print("1. Gerenciar Quartos")
+        print("2. Gerenciar Hóspedes")
+        print("3. Gerenciar Reservas")
+        print("4. Sair")
+        opcao = input("Escolha uma opção: ")
+
+        if opcao == "1":
+            while True:
+                # Submenu para gerenciar quartos
+                print("\nGerenciar Quartos:")
+                print("1. Criar Quarto")
+                print("2. Ler Quarto")
+                print("3. Atualizar Quarto")
+                print("4. Deletar Quarto")
+                print("5. Listar Todos os Quartos")
+                print("6. Voltar ao Menu Principal")
+                sub_opcao = input("Escolha uma opção: ")
+
+                if sub_opcao == "1":
+                    # Criação de um novo quarto
+                    numero = int(input("Número do Quarto: "))
+                    tipo = input("Tipo do Quarto: ")
+                    tarifa_diaria = float(input("Tarifa Diária: "))
+                    gerenciador.criar_quarto(numero, tipo, tarifa_diaria)
+                    print("Quarto criado com sucesso.")
+                elif sub_opcao == "2":
+                    # Leitura de um quarto específico
+                    numero = int(input("Número do Quarto: "))
+                    quarto = gerenciador.ler_quarto(numero)
+                    if quarto:
+                        print(quarto)
+                    else:
+                        print("Quarto não encontrado.")
+                elif sub_opcao == "3":
+                    # Atualização de um quarto existente
+                    numero = int(input("Número do Quarto: "))
+                    tipo = input("Novo Tipo do Quarto (deixe em branco para manter o atual): ")
+                    tarifa_diaria = input("Nova Tarifa Diária (deixe em branco para manter a atual): ")
+
+                    # Verifica se os valores foram fornecidos e chama o método de atualização
+                    gerenciador.atualizar_quarto(
+                        numero,
+                        tipo if tipo else None,
+                        float(tarifa_diaria) if tarifa_diaria else None
+                    )
+                    print("Quarto atualizado com sucesso.")
+                elif sub_opcao == "4":
+                    # Deleção de um quarto
+                    numero = int(input("Número do Quarto: "))
+                    gerenciador.deletar_quarto(numero)
+                    print("Quarto deletado com sucesso.")
+                elif sub_opcao == "5":
+                    # Listagem de todos os quartos
+                    gerenciador.listar_quartos()
+                elif sub_opcao == "6":
+                    # Voltar ao menu principal
+                    break
+
+        elif opcao == "2":
+            while True:
+                # Submenu para gerenciar hóspedes
+                print("\nGerenciar Hóspedes:")
+                print("1. Criar Hóspede")
+                print("2. Ler Hóspede")
+                print("3. Atualizar Hóspede")
+                print("4. Deletar Hóspede")
+                print("5. Listar Todos os Hóspedes")
+                print("6. Voltar ao Menu Principal")
+                sub_opcao = input("Escolha uma opção: ")
+
+                if sub_opcao == "1":
+                    # Criação de um novo hóspede
+                    nome = input("Nome do Hóspede: ")
+                    endereco = input("Endereço do Hóspede: ")
+                    telefone = input("Telefone do Hóspede: ")
+                    gerenciador.criar_hospede(nome, endereco, telefone)
+                    print("Hóspede criado com sucesso.")
+                elif sub_opcao == "2":
+                    # Leitura de um hóspede específico
+                    nome = input("Nome do Hóspede: ")
+                    hospede = gerenciador.ler_hospede(nome)
+                    if hospede:
+                        print(hospede)
+                    else:
+                        print("Hóspede não encontrado.")
+                elif sub_opcao == "3":
+                    # Atualização de um hóspede existente
+                    nome = input("Nome do Hóspede: ")
+                    endereco = input("Novo Endereço do Hóspede (deixe em branco para manter o atual): ")
+                    telefone = input("Novo Telefone do Hóspede (deixe em branco para manter o atual): ")
+
+                    # Verifica se os valores foram fornecidos e chama o método de atualização
+                    gerenciador.atualizar_hospede(
+                        nome,
+                        endereco if endereco else None,
+                        telefone if telefone else None
+                    )
+                    print("Hóspede atualizado com sucesso.")
+                elif sub_opcao == "4":
+                    # Deleção de um hóspede
+                    nome = input("Nome do Hóspede: ")
+                    gerenciador.deletar_hospede(nome)
+                    print("Hóspede deletado com sucesso.")
+                elif sub_opcao == "5":
+                    # Listagem de todos os hóspedes
+                    gerenciador.listar_hospedes()
+                elif sub_opcao == "6":
+                    # Voltar ao menu principal
+                    break
+
+        elif opcao == "3":
+            while True:
+                # Submenu para gerenciar reservas
+                print("\nGerenciar Reservas:")
+                print("1. Criar Reserva")
+                print("2. Ler Reserva")
+                print("3. Atualizar Reserva")
+                print("4. Deletar Reserva")
+                print("5. Listar Todas as Reservas")
+                print("6. Voltar ao Menu Principal")
+                sub_opcao = input("Escolha uma opção: ")
+
+                if sub_opcao == "1":
+                    # Criação de uma nova reserva
+                    data_inicio = input("Data de Início (dd-mm-aaaa): ")
+                    data_fim = input("Data de Fim (dd-mm-aaaa): ")
+                    numero_quarto = int(input("Número do Quarto: "))
+                    nome_hospede = input("Nome do Hóspede: ")
+                    reserva = gerenciador.criar_reserva(data_inicio, data_fim, numero_quarto, nome_hospede)
+                    if reserva:
+                        print("Reserva criada com sucesso.")
+                    else:
+                        print("Falha ao criar reserva. Verifique se o quarto e o hóspede existem.")
+                elif sub_opcao == "2":
+                    # Leitura de uma reserva específica
+                    numero_quarto = int(input("Número do Quarto: "))
+                    nome_hospede = input("Nome do Hóspede: ")
+                    reserva = gerenciador.ler_reserva(numero_quarto, nome_hospede)
+                    if reserva:
+                        print(reserva)
+                    else:
+                        print("Reserva não encontrada.")
+                elif sub_opcao == "3":
+                    # Atualização de uma reserva existente
+                    numero_quarto = int(input("Número do Quarto: "))
+                    nome_hospede = input("Nome do Hóspede: ")
+                    data_inicio = input("Nova Data de Início (deixe em branco para manter a atual): ")
+                    data_fim = input("Nova Data de Fim (deixe em branco para manter a atual): ")
+
+                    # Verifica se os valores foram fornecidos e chama o método de atualização
+                    gerenciador.atualizar_reserva(
+                        numero_quarto,
+                        nome_hospede,
+                        data_inicio if data_inicio else None,
+                        data_fim if data_fim else None
+                    )
+                    print("Reserva atualizada com sucesso.")
+                elif sub_opcao == "4":
+                    # Deleção de uma reserva
+                    numero_quarto = int(input("Número do Quarto: "))
+                    nome_hospede = input("Nome do Hóspede: ")
+                    gerenciador.deletar_reserva(numero_quarto, nome_hospede)
+                    print("Reserva deletada com sucesso.")
+                elif sub_opcao == "5":
+                    # Listagem de todas as reservas
+                    gerenciador.listar_reservas()
+                elif sub_opcao == "6":
+                    # Voltar ao menu principal
+                    break
+
+        elif opcao == "4":
+            # Sai do programa
+            print("Saindo do programa.")
+            break
+
+# Executa a função menu se este arquivo for executado como programa principal
+if __name__ == "__main__":
+    menu()
